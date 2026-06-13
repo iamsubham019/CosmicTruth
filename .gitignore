@@ -1,0 +1,19 @@
+# Virtual environment
+fakenews_env/
+*.pyc
+__pycache__/
+
+# Model checkpoints (too large for GitHub)
+outputs/checkpoints/*.pt
+outputs/checkpoints/*.pth
+
+# Data cache
+data/raw/
+*.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
