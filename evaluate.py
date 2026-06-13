@@ -127,23 +127,10 @@ def evaluate():
     model.load_state_dict(ckpt["model_state_dict"])
     print(f"Loaded model from epoch {ckpt['epoch']} (best val F1: {ckpt['val_f1']:.4f})")
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    records = generate_synthetic_dataset(500)
-    _, _, records_test = split_records(records)
-    _, _, test_loader = get_dataloaders(records, records[:50], records_test, tokenizer)
-=======
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
     from data.dataset import load_fakenews_hf
     records = load_fakenews_hf()
     records_train, records_val, records_test = split_records(records)
     _, _, test_loader = get_dataloaders(records_train, records_val, records_test, tokenizer)
-<<<<<<< HEAD
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-
     print("Running evaluation...")
     metrics = evaluate_detailed(model, test_loader, device)
     print(f"  Accuracy : {metrics['accuracy']:.4f}")
@@ -179,12 +166,6 @@ def evaluate():
 
     for i in range(min(3, len(test_ds))):
         sample = test_ds[i]
-<<<<<<< HEAD
-<<<<<<< HEAD
-        batch = {k: v.unsqueeze(0) if isinstance(v, torch.Tensor) else [v] for k, v in sample.items()}
-=======
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
         batch = {
             "input_ids": sample["input_ids"].unsqueeze(0),
             "attention_mask": sample["attention_mask"].unsqueeze(0),
@@ -193,10 +174,6 @@ def evaluate():
             "graph_edge_index": [sample["graph_edge_index"]],
             "graph_num_nodes": [sample["graph_num_nodes"]],
         }
-<<<<<<< HEAD
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
         explanation = explainer.explain_prediction(batch, news_id=f"sample_{i}")
         report_path = explainer.generate_report(explanation, news_id=f"sample_{i}", save_dir=output_dir)
         print(f"  Sample {i}: {explanation['prediction']} ({explanation['confidence']:.1%}) → {report_path}")

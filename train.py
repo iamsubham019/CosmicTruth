@@ -4,13 +4,7 @@ import json
 import numpy as np
 import torch
 import torch.nn as nn
-<<<<<<< HEAD
-<<<<<<< HEAD
 import torch.nn.functional as F
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
 from torch.optim import AdamW
 from torch.optim.lr_scheduler import OneCycleLR
 from transformers import AutoTokenizer
@@ -46,17 +40,11 @@ def get_device() -> torch.device:
     return torch.device("cpu")
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 def compute_loss(logits: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
     """Cross-entropy loss with label smoothing to reduce overfitting."""
     return F.cross_entropy(logits, labels, label_smoothing=0.1)
 
 
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
 def run_epoch(
     model: FakeNewsDetector,
     loader,
@@ -94,19 +82,7 @@ def run_epoch(
                 graph_num_nodes=graph_num_nodes,
             )
 
-<<<<<<< HEAD
-<<<<<<< HEAD
             loss = compute_loss(out["logits"], labels)
-=======
-            loss = model.get_loss(
-                out["logits"], labels, out.get("inconsistency_score")
-            )
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
-            loss = model.get_loss(
-                out["logits"], labels, out.get("inconsistency_score")
-            )
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
 
             if is_train:
                 optimizer.zero_grad()
@@ -178,19 +154,8 @@ def run_ablation(
 ) -> Dict:
     configs = [
         ("Text only", True, False, False),
-<<<<<<< HEAD
-<<<<<<< HEAD
-        ("Image only", False, True, False),
-        ("Text + Social", True, False, True),
-        ("Full (Text+Image+Social)", True, True, True),
-=======
         ("Text + Social", True, False, True),
         ("Full (Text+Social)", True, False, True),
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
-        ("Text + Social", True, False, True),
-        ("Full (Text+Social)", True, False, True),
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
     ]
 
     results = {}
@@ -306,7 +271,7 @@ def train():
                     "use_social": CFG.train.use_social,
                 },
             }, checkpoint_path)
-            print(f"  ✓ Saved best model (val_f1={best_val_f1:.4f})")
+            print(f"  \u2713 Saved best model (val_f1={best_val_f1:.4f})")
         else:
             patience_counter += 1
             if patience_counter >= CFG.train.early_stopping_patience:
@@ -344,12 +309,4 @@ def train():
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
-<<<<<<< HEAD
     train()
-=======
-    train()
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
-    train()
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1

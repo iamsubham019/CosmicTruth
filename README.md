@@ -4,6 +4,8 @@ CosmicTruth is a multimodal fake news detection system that combines **text anal
 
 The system is deployed as an interactive Streamlit web application with a custom space-themed ("CosmicTruth") UI.
 
+**🚀 Live Demo:** [cosmictruth.streamlit.app](https://cosmictruth.streamlit.app)
+
 ---
 
 ## Pretrained Model
