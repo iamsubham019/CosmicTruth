@@ -1,16 +1,71 @@
-# Multimodal Fake News Detection with Explainable AI
+# 🌌 CosmicTruth — Multimodal Fake News Detection with Explainable AI
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-> B.Tech Final Year Project | AIML | 2 Research Papers
-=======
+CosmicTruth is a multimodal fake news detection system that combines **text analysis (RoBERTa)**, **social propagation analysis (Graph Attention Networks)**, and an architecturally-ready **image analysis stream (CLIP-ViT)**, fused through a **cross-modal attention mechanism**. Every prediction comes with a full **Explainable AI (XAI)** breakdown — highlighted influential words, modality contribution weights, and gradient attribution maps.
 
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
+The system is deployed as an interactive Streamlit web application with a custom space-themed ("CosmicTruth") UI.
 
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
+---
 
-A tri-stream deep learning system that detects fake news by jointly analyzing **text**, **images**, and **social propagation graphs** — with full XAI explanations for every prediction.
+## Pretrained Model
+
+The trained checkpoint (`best_model.pt`, ~631MB, epoch 9, **99.20% accuracy**, **0.9998 AUC-ROC**) is not included in this repo due to GitHub's 100MB file size limit.
+
+**Download:** [best_model.pt](https://drive.google.com/file/d/1knRfSJa4UsFyCBtopIm7-CBTNtqGH6ID/view?usp=sharing)
+
+After downloading, place the file at:
+```
+outputs/checkpoints/best_model.pt
+```
+
+---
+
+## Key Results
+
+| Metric | Score |
+|---|---|
+| Accuracy | 99.20% |
+| F1 Macro | 99.19% |
+| F1 (Fake) | 99.13% |
+| AUC-ROC | 0.9998 |
+
+Trained and evaluated on the [GonzaloA/fake_news](https://huggingface.co/datasets/GonzaloA/fake_news) dataset (40,583 articles, 70/15/15 train/val/test split).
+
+### Ablation Study
+
+| Configuration | Accuracy | F1 Macro |
+|---|---|---|
+| Text only | 0.9851 | 0.9849 |
+| Text + Social (Full) | **0.9920** | **0.9919** |
+
+---
+
+## Architecture
+
+```
+Text Input  ──► RoBERTa-base ──► 512-dim
+                                       ╲
+                                        ► Cross-Modal Attention Fusion ──► MLP ──► Real / Fake
+                                       ╱
+Social Graph ──► GAT (2 layers, 4 heads) ──► 512-dim
+```
+
+| Component | Technology | Output |
+|---|---|---|
+| Text Encoder | RoBERTa-base (fine-tuned, last 2 layers) | 768-dim → 512-dim projected |
+| Social Encoder | Graph Attention Network (2 layers, 4 heads) | 512-dim graph embedding |
+| Image Encoder | CLIP-ViT-B/32 (architecturally ready, inactive) | 512-dim |
+| Fusion Module | Cross-modal attention (8 heads) + modality gating | 512-dim fused vector |
+| Classifier | 2-layer MLP | 2-class softmax (Real / Fake) |
+| XAI Layer | Gradient × Embedding attribution + attention weights | Token scores + modality weights |
+
+---
+
+## Explainable AI
+
+CosmicTruth provides two forms of explanation for every prediction:
+
+1. **Token Attribution** — Gradient-times-input attribution highlights which words in the article most influenced the prediction, displayed as a color-coded heatmap (red = high importance, amber = medium, purple = low).
+2. **Modality Contribution** — A bar chart showing how much the Text stream vs. the Social stream contributed to the final decision, derived from the fusion module's learned gating weights.
 
 ---
 
@@ -18,80 +73,49 @@ A tri-stream deep learning system that detects fake news by jointly analyzing **
 
 ```
 fakenews_xai/
-├── config.py                        # All hyperparameters and settings
-├── train.py                         # Training loop + ablation study
-├── evaluate.py                      # Evaluation + visualization + XAI reports
-├── app.py                           # Streamlit web demo
-├── requirements.txt
-│
-├── data/
-│   └── dataset.py                   # Dataset loading, preprocessing, DataLoaders
-│
+├── app.py                  # Streamlit web application (CosmicTruth UI)
+├── train.py                 # Training script with label smoothing & early stopping
+├── evaluate.py               # Detailed evaluation + XAI report generation
+├── config.py                  # All hyperparameters and configuration
 ├── models/
-│   ├── text_encoder.py              # RoBERTa text encoder
-│   ├── image_encoder.py             # CLIP-ViT image encoder with GradCAM hooks
-│   ├── social_encoder.py            # GAT-based social graph encoder
-│   ├── fusion.py                    # Cross-modal attention fusion (core contribution)
-│   ├── detector.py                  # Main FakeNewsDetector combining all streams
-│   └── inconsistency_detector.py   # Paper 2: CLIP inconsistency module
-│
+│   ├── text_encoder.py        # RoBERTa-based text encoder
+│   ├── image_encoder.py        # CLIP-ViT image encoder + GradCAM
+│   ├── social_encoder.py        # GAT-based social graph encoder
+│   ├── fusion.py                 # Cross-modal attention fusion module
+│   ├── inconsistency_detector.py  # Cross-modal inconsistency scoring
+│   └── detector.py                 # Main FakeNewsDetector model
+├── data/
+│   └── dataset.py                   # Dataset loading & preprocessing (GonzaloA/fake_news)
 ├── xai/
-│   └── explainer.py                 # Unified XAI: SHAP text, GradCAM image, attention fusion
-│
+│   └── explainer.py                  # Unified XAI explainer
 └── outputs/
-    ├── checkpoints/                 # Saved model weights
-    ├── logs/                        # Training metrics JSON
-    └── explanations/                # Per-sample XAI reports
+    ├── checkpoints/                    # Trained model weights (download separately)
+    ├── logs/                             # Training history & metrics
+    └── evaluation/                        # Confusion matrix, training curves, XAI samples
 ```
 
 ---
 
-## Quickstart
+## Setup
 
-### 1. Install dependencies
+### 1. Create a virtual environment
 
 ```bash
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
-pip install torch-geometric
+python -m venv fakenews_env
+fakenews_env\Scripts\activate     # Windows
+```
+
+### 2. Install dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. (Optional) Download FakeNewsNet dataset
+### 3. Download the pretrained checkpoint
 
-```bash
-git clone https://github.com/KaiDMML/FakeNewsNet.git
-# Follow their instructions to download data
-# Place in data/raw/fake/ and data/raw/real/
-```
+Download `best_model.pt` from the link above and place it at `outputs/checkpoints/best_model.pt`.
 
-If no dataset is found, the system automatically generates a **synthetic dataset** so you can run and test the full pipeline immediately.
-
-### 3. Train the model
-
-```bash
-python train.py
-```
-
-This will:
-- Train the full tri-stream model for up to 20 epochs with early stopping
-- Save the best checkpoint to `outputs/checkpoints/best_model.pt`
-- Run a 5-configuration ablation study automatically
-- Save all metrics to `outputs/logs/`
-
-### 4. Evaluate + generate XAI reports
-
-```bash
-python evaluate.py
-```
-
-Generates:
-- Confusion matrix
-- ROC curve
-- Training curves
-- Ablation bar chart
-- Per-sample XAI reports (text attribution + GradCAM + modality weights)
-
-### 5. Run the web demo
+### 4. Run the app
 
 ```bash
 streamlit run app.py
@@ -101,111 +125,63 @@ Open `http://localhost:8501` in your browser.
 
 ---
 
-## Model Architecture
+## Training from Scratch
 
-```
-Text (RoBERTa)  ──┐
-                   ├──► Cross-Modal Attention Fusion ──► Classifier ──► Real/Fake + Explanation
-Image (CLIP-ViT) ──┤
-                   │
-Social (GAT) ──────┘
-                   │
-                   └──► Text-Image Inconsistency Score  (Paper 2 signal)
+```bash
+python train.py
 ```
 
-### Key design decisions
+This will:
+- Load the GonzaloA/fake_news dataset from HuggingFace (40,583 articles)
+- Train with label smoothing, weight decay, and early stopping
+- Save the best checkpoint to `outputs/checkpoints/best_model.pt`
+- Run a final test evaluation and ablation study
+- Save results to `outputs/logs/training_results.json`
 
-**Why RoBERTa over BERT?**
-RoBERTa uses dynamic masking during pretraining and removes the next-sentence prediction objective, consistently outperforming BERT on downstream classification tasks.
-
-**Why CLIP-ViT over ResNet?**
-CLIP's joint vision-language pretraining means image features are already semantically aligned with text — critical for cross-modal inconsistency detection.
-
-**Why GAT over GCN?**
-Graph Attention Networks learn to weight neighbor importance, which matters for propagation graphs where retweet source credibility varies.
-
-**Why cross-modal attention instead of concatenation?**
-Concatenation treats all modalities equally. Cross-modal attention lets the model learn WHICH modality to trust for each specific sample (a text-only fake news differs from an image-based one).
-
----
-
-## XAI Methods
-
-| Modality | Method | Library | Output |
-|----------|--------|---------|--------|
-| Text | Gradient × Embedding | Captum / custom | Per-token importance score |
-| Image | GradCAM | Captum | Spatial heatmap over image |
-| Fusion | Cross-modal attention | PyTorch | Per-modality contribution weights |
-| Text-Image | CLIP cosine similarity | HuggingFace | Inconsistency score 0–1 |
+**Training configuration:**
+- Batch size: 16
+- Learning rate: 1e-5 (OneCycleLR scheduler)
+- Label smoothing: 0.1
+- Early stopping patience: 5
+- Hardware used: NVIDIA RTX 4050 Laptop GPU (6GB VRAM)
 
 ---
 
-## Paper 1: Full System
+## Evaluation
 
-**Title idea:** "TriXFND: Cross-Modal Attention Fusion with Tri-Stream Explainable Fake News Detection"
-
-**Unique contributions:**
-1. Three-stream architecture with text + image + social propagation
-2. Cross-modal attention fusion (learned per-sample, not fixed concatenation)
-3. Auxiliary text-image inconsistency loss during training
-4. Quantitative XAI evaluation using AOPC (Area Over the Perturbation Curve)
-5. Ablation study proving each modality contributes
-
-**Target venues:** IEEE Access, Expert Systems with Applications, Information Processing & Management
-
----
-
-## Paper 2: Inconsistency Detection
-
-**Title idea:** "Out-of-Context Image Detection: CLIP-Based Cross-Modal Inconsistency Scoring for Fake News with XAI"
-
-**Unique contribution:**
-Fake news frequently uses *real images* with *false captions* (out-of-context manipulation). This module uses CLIP's joint embedding space to compute a semantic inconsistency score, visualizes which image patches are most contradictory to the text, and uses this as an interpretable signal.
-
-**Run Paper 2 module:**
-```python
-from models.inconsistency_detector import CLIPInconsistencyDetector
-from transformers import CLIPProcessor
-
-detector = CLIPInconsistencyDetector()
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-
-result = detector.explain_inconsistency(
-    text="Flood victims rescued in Mumbai",
-    image_tensor=your_image_tensor,
-    processor=processor,
-)
-print(result["verdict"])
-print(f"Inconsistency: {result['inconsistency_score']:.4f}")
+```bash
+python evaluate.py
 ```
 
+Generates:
+- Confusion matrix
+- Training/validation curves
+- Ablation study comparison
+- Per-sample XAI reports (text attribution, fusion weights)
+
 ---
 
-## Configuration
+## Tech Stack
 
-All settings live in `config.py`. Key parameters:
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `text_encoder` | `roberta-base` | HuggingFace model name |
-| `image_encoder` | `openai/clip-vit-base-patch32` | CLIP variant |
-| `fusion_num_heads` | `8` | Attention heads in fusion |
-| `batch_size` | `16` | Reduce to 8 if OOM |
-| `num_epochs` | `20` | With early stopping |
-| `use_social` | `True` | Toggle social stream |
+- **PyTorch** 2.6.0 + CUDA 12.4
+- **HuggingFace Transformers** (RoBERTa, CLIP)
+- **PyTorch Geometric** (Graph Attention Networks)
+- **Streamlit** (web application)
+- **scikit-learn** (evaluation metrics)
+- **Matplotlib** (visualizations)
 
 ---
 
 ## Citation
 
-If you use this code in your research paper, cite as:
+If you use this work, please cite:
 
-```bibtex
-@misc{yourname2025trixtnd,
-  title={TriXFND: Cross-Modal Attention Fusion with Tri-Stream Explainable Fake News Detection},
-  author={Your Name},
-  year={2025},
-  institution={Your Institution},
+```
+@misc{cosmictruth2026,
+  title={CosmicTruth: Multimodal Fake News Detection with Explainable AI},
+  author={Subham Pal and Swastika Das},
+  year={2026},
+  note={B.Tech Final Year Project, Department of AI \& ML}
 }
 ```
 
@@ -213,4 +189,4 @@ If you use this code in your research paper, cite as:
 
 ## License
 
-MIT License. Free to use for academic research.
+This project is released for academic and research purposes.
