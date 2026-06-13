@@ -27,15 +27,7 @@ class ModelConfig:
     social_gnn_heads: int = 4
     fusion_hidden_dim: int = 512
     fusion_num_heads: int = 8
-<<<<<<< HEAD
-<<<<<<< HEAD
     fusion_dropout: float = 0.2
-=======
-    fusion_dropout: float = 0.1
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
-    fusion_dropout: float = 0.1
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
     num_classes: int = 2
     classifier_hidden_dim: int = 256
 
@@ -44,8 +36,6 @@ class ModelConfig:
 class TrainConfig:
     batch_size: int = 16
     num_epochs: int = 20
-<<<<<<< HEAD
-<<<<<<< HEAD
     learning_rate: float = 1e-5
     weight_decay: float = 1e-3
     fusion_dropout: float = 0.2
@@ -57,25 +47,6 @@ class TrainConfig:
     gradient_clip: float = 1.0
     save_dir: str = "outputs/checkpoints"
     log_dir: str = "outputs/logs"
-=======
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-    learning_rate: float = 2e-5
-    weight_decay: float = 1e-4
-    warmup_steps: int = 500
-    gradient_clip: float = 1.0
-    early_stopping_patience: int = 5
-    save_dir: str = "outputs/checkpoints"
-    log_dir: str = "outputs/logs"
-    device: str = "cuda"
-    seed: int = 42
-    use_social: bool = True
-    use_image: bool = False
-    use_text: bool = True
-<<<<<<< HEAD
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
 
 
 @dataclass
@@ -108,17 +79,5 @@ class Config:
 
 CFG = Config()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 LABEL_MAP = {0: "Real", 1: "Fake"}
 LABEL_COLORS = {0: "#22c55e", 1: "#ef4444"}
-=======
-
-LABEL_MAP = {0: "Real", 1: "Fake"}
-LABEL_COLORS = {0: "#22c55e", 1: "#ef4444"}
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
-
-LABEL_MAP = {0: "Real", 1: "Fake"}
-LABEL_COLORS = {0: "#22c55e", 1: "#ef4444"}
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1

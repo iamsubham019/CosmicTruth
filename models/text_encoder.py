@@ -2,14 +2,6 @@ import torch
 import torch.nn as nn
 from transformers import AutoModel, AutoTokenizer
 from typing import Tuple, Optional
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
-
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
 from config import CFG
 
 
@@ -18,14 +10,6 @@ class TextEncoder(nn.Module):
         super().__init__()
         self.backbone = AutoModel.from_pretrained(CFG.model.text_encoder)
         self.hidden_dim = CFG.model.text_hidden_dim
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
-
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
         self.projection = nn.Sequential(
             nn.Linear(self.hidden_dim, self.hidden_dim),
             nn.LayerNorm(self.hidden_dim),
@@ -45,29 +29,11 @@ class TextEncoder(nn.Module):
             attention_mask=attention_mask,
             output_hidden_states=True,
         )
-<<<<<<< HEAD
-<<<<<<< HEAD
         cls_embedding = outputs.last_hidden_state[:, 0, :]
         token_embeddings = outputs.last_hidden_state
         projected = self.projection(cls_embedding)
         if return_token_embeddings:
             return projected, token_embeddings
-=======
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-
-        cls_embedding = outputs.last_hidden_state[:, 0, :]
-        token_embeddings = outputs.last_hidden_state
-
-        projected = self.projection(cls_embedding)
-
-        if return_token_embeddings:
-            return projected, token_embeddings
-
-<<<<<<< HEAD
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
         return projected, None
 
     def get_tokenizer(self):
@@ -76,29 +42,9 @@ class TextEncoder(nn.Module):
     def freeze_backbone(self, num_layers_to_unfreeze: int = 2):
         for param in self.backbone.parameters():
             param.requires_grad = False
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
-
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
         encoder_layers = self.backbone.encoder.layer
         for layer in encoder_layers[-num_layers_to_unfreeze:]:
             for param in layer.parameters():
                 param.requires_grad = True
-<<<<<<< HEAD
-<<<<<<< HEAD
         for param in self.backbone.pooler.parameters():
             param.requires_grad = True
-=======
-
-        for param in self.backbone.pooler.parameters():
-            param.requires_grad = True
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
-=======
-
-        for param in self.backbone.pooler.parameters():
-            param.requires_grad = True
->>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
