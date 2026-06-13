@@ -153,12 +153,21 @@ st.markdown("""
 >>>>>>> caec3e7300fade99d6c3b5550bd54dd2ee3253c1
 
 
+import gdown
+
+def ensure_checkpoint():
+    checkpoint_path = CFG.app.model_checkpoint
+    if not os.path.exists(checkpoint_path):
+        os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
+        with st.spinner("Downloading model checkpoint (~631MB, first run only)..."):
+            gdown.download(id="1knRfSJa4UsFyCBtopIm7-CBTNtqGH6ID", output=checkpoint_path, quiet=False)
+
+
 @st.cache_resource
 def load_model_and_explainer():
+    ensure_checkpoint()
     device = torch.device("cpu")
     tokenizer = AutoTokenizer.from_pretrained(CFG.model.text_encoder)
-<<<<<<< HEAD
-<<<<<<< HEAD
     model = FakeNewsDetector(use_text=True, use_image=False, use_social=True).to(device)
     checkpoint_path = CFG.app.model_checkpoint
     if os.path.exists(checkpoint_path):
